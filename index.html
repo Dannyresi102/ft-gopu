@@ -4,21 +4,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Langen Registry — Interface</title>
+    <title>🐨 Gopu Registry — Front-End React</title>
 
-    <!-- CDN React + ReactDOM + Vite runtime -->
-    <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/vite@5.4.8/dist/client/client.mjs"></script>
+    <!-- React, ReactDOM et Babel CDN -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
 
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
       body {
-        font-family: "Inter", system-ui, sans-serif;
-        background: linear-gradient(135deg, #090909, #1e1e2e);
-        color: #f2f2f2;
+        font-family: "Inter", sans-serif;
+        background: radial-gradient(circle at 20% 20%, #171d33, #0d0d0f);
+        color: #f0f0f0;
         margin: 0;
-        padding: 0;
         min-height: 100vh;
         display: flex;
         align-items: center;
@@ -26,42 +26,45 @@
       }
       #root {
         width: 90%;
-        max-width: 900px;
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(8px);
+        max-width: 950px;
+        background: rgba(255, 255, 255, 0.04);
         border-radius: 16px;
         padding: 40px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 0 40px rgba(0,0,0,0.6);
       }
       header {
         text-align: center;
         margin-bottom: 2rem;
       }
       header h1 {
-        font-size: 2.4rem;
+        font-size: 2.8rem;
         margin: 0;
-        color: #6de7ff;
-        letter-spacing: 2px;
+        color: #84e1ff;
+        letter-spacing: 1px;
       }
       header p {
-        color: #bbb;
+        color: #aaa;
+      }
+      a {
+        color: #6de7ff;
+        text-decoration: none;
       }
       .pkg-card {
-        border: 1px solid rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.1);
         padding: 1rem 1.5rem;
-        border-radius: 8px;
+        border-radius: 10px;
         margin-bottom: 1rem;
         background: rgba(255,255,255,0.03);
-        transition: 0.2s ease;
+        transition: all 0.2s ease;
       }
       .pkg-card:hover {
         background: rgba(255,255,255,0.08);
-        transform: translateY(-2px);
+        transform: translateY(-3px);
       }
       footer {
         text-align: center;
         margin-top: 2rem;
-        color: #888;
+        color: #777;
         font-size: 0.9rem;
       }
       input {
@@ -82,17 +85,21 @@
         cursor: pointer;
         margin-left: 10px;
         font-weight: 600;
+        transition: background 0.2s ease;
       }
       button:hover {
         background: #3ad0e9;
       }
     </style>
   </head>
+
   <body>
     <div id="root"></div>
 
     <script type="text/babel">
       const { useState, useEffect } = React;
+
+      const SERVER_URL = "https://gopu-dm9u.onrender.com";
 
       function App() {
         const [packages, setPackages] = useState([]);
@@ -100,7 +107,7 @@
         const [filtered, setFiltered] = useState([]);
 
         useEffect(() => {
-          fetch("/-/all")
+          fetch(SERVER_URL + "/-/all")
             .then(res => res.json())
             .then(data => {
               const list = Object.keys(data || {}).map(k => ({
@@ -121,18 +128,18 @@
         return (
           <div>
             <header>
-              <h1>Langen Registry</h1>
-              <p>Serveur de paquets — <a href="https://gopu-dm9u.onrender.com" style={{color:"#6de7ff"}}>https://gopu-dm9u.onrender.com</a></p>
+              <h1>🐨 Gopu Registry</h1>
+              <p>Serveur de paquets Langen — <a href={SERVER_URL}>{SERVER_URL}</a></p>
             </header>
 
             <div style={{ textAlign: "center", marginBottom: "2rem" }}>
               <input
                 type="text"
-                placeholder="Rechercher un package..."
+                placeholder="🔍 Rechercher un package..."
                 value={query}
                 onChange={e => setQuery(e.target.value)}
               />
-              <button onClick={() => window.location.reload()}>🔄 Actualiser</button>
+              <button onClick={() => window.location.reload()}>Actualiser</button>
             </div>
 
             {filtered.length === 0 ? (
@@ -141,7 +148,7 @@
               filtered.map(pkg => (
                 <div className="pkg-card" key={pkg.name}>
                   <strong>{pkg.name}</strong> <span style={{ color: "#999" }}>v{pkg.version}</span>
-                  <div style={{ fontSize: "0.9rem", color: "#ccc" }}>
+                  <div style={{ fontSize: "0.9rem", color: "#ccc", marginTop: "4px" }}>
                     <code>npm install {pkg.name}</code>
                   </div>
                 </div>
@@ -149,7 +156,7 @@
             )}
 
             <footer>
-              © 2025 Langen Registry UI — alimenté par React + Vite CDN
+              🐨 Gopu Registry © 2025 — propulsé par React & Vite CDN
             </footer>
           </div>
         );
