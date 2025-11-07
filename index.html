@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Langen Registry — Interface</title>
+
+    <!-- CDN React + ReactDOM + Vite runtime -->
+    <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/vite@5.4.8/dist/client/client.mjs"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        background: linear-gradient(135deg, #090909, #1e1e2e);
+        color: #f2f2f2;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #root {
+        width: 90%;
+        max-width: 900px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(8px);
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      }
+      header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      header h1 {
+        font-size: 2.4rem;
+        margin: 0;
+        color: #6de7ff;
+        letter-spacing: 2px;
+      }
+      header p {
+        color: #bbb;
+      }
+      .pkg-card {
+        border: 1px solid rgba(255,255,255,0.15);
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        background: rgba(255,255,255,0.03);
+        transition: 0.2s ease;
+      }
+      .pkg-card:hover {
+        background: rgba(255,255,255,0.08);
+        transform: translateY(-2px);
+      }
+      footer {
+        text-align: center;
+        margin-top: 2rem;
+        color: #888;
+        font-size: 0.9rem;
+      }
+      input {
+        background: rgba(255,255,255,0.1);
+        border: none;
+        color: white;
+        padding: 10px 14px;
+        border-radius: 8px;
+        outline: none;
+        width: 70%;
+      }
+      button {
+        background: #6de7ff;
+        color: #000;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-left: 10px;
+        font-weight: 600;
+      }
+      button:hover {
+        background: #3ad0e9;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      function App() {
+        const [packages, setPackages] = useState([]);
+        const [query, setQuery] = useState("");
+        const [filtered, setFiltered] = useState([]);
+
+        useEffect(() => {
+          fetch("/-/all")
+            .then(res => res.json())
+            .then(data => {
+              const list = Object.keys(data || {}).map(k => ({
+                name: k,
+                version: data[k]?.["dist-tags"]?.latest || "1.0.0"
+              }));
+              setPackages(list);
+              setFiltered(list);
+            })
+            .catch(err => console.error(err));
+        }, []);
+
+        useEffect(() => {
+          const f = packages.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+          setFiltered(f);
+        }, [query]);
+
+        return (
+          <div>
+            <header>
+              <h1>Langen Registry</h1>
+              <p>Serveur de paquets — <a href="https://gopu-dm9u.onrender.com" style={{color:"#6de7ff"}}>https://gopu-dm9u.onrender.com</a></p>
+            </header>
+
+            <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+              <input
+                type="text"
+                placeholder="Rechercher un package..."
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+              />
+              <button onClick={() => window.location.reload()}>🔄 Actualiser</button>
+            </div>
+
+            {filtered.length === 0 ? (
+              <p style={{ textAlign: "center", color: "#999" }}>Aucun package trouvé</p>
+            ) : (
+              filtered.map(pkg => (
+                <div className="pkg-card" key={pkg.name}>
+                  <strong>{pkg.name}</strong> <span style={{ color: "#999" }}>v{pkg.version}</span>
+                  <div style={{ fontSize: "0.9rem", color: "#ccc" }}>
+                    <code>npm install {pkg.name}</code>
+                  </div>
+                </div>
+              ))
+            )}
+
+            <footer>
+              © 2025 Langen Registry UI — alimenté par React + Vite CDN
+            </footer>
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
+</html>
